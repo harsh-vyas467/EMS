@@ -41,3 +41,12 @@ Flyway solves these problems by offering:
 📌 
 > Don’t rely on your app to manage production databases.
 Use Flyway to ensure database changes are safe, trackable, and independent of your application code.
+
+
+-------
+add this lines in application.properties file to auto generate schema, and later you can put that file inside db.migration and rename it.
+#To create database schema through JPA
+
+#spring.jpa.properties.jakarta.persistence.schema-generation.scripts.action=create
+#spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-target=schema.sql
+#spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-source=metadata
