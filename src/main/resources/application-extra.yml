@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: ems-backend
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/ems  # DB connection URL
+    username: postgres                         # DB user
+    password: super                            # DB password
+
+  jpa:
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect  # Hibernate dialect
+    properties:
+      hibernate:
+        format_sql: true                      # Format SQL output in logs
+
+  flyway:
+    enabled: true                             # Enable Flyway
+    baseline-on-migration: true               # Set baseline if DB already exists
+    locations: classpath:db/migration         # Path to migration scripts
+    user: postgres                            # Optional override for Flyway DB user
+    password: super                           # Optional override for Flyway DB password
+    baseline-description: init                # Description for baseline
+    baseline-version: 0                       # Baseline version to start from

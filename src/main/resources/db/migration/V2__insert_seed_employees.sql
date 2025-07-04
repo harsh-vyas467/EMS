@@ -1,0 +1,22 @@
+INSERT INTO employees
+            (first_name,
+             last_name,
+             email_id)
+VALUES      ('Sita',
+             'Ram',
+             'sita.ram@gmail.com'),
+            ('Krishna',
+             'Yadav',
+             'krishna.yadav@gmail.com'),
+            ('Balram',
+             'Yadav',
+             'balram.yadav@gmail.com'),
+            ('Parvati',
+             'Shiv',
+             'shiv.parwati@gmail.com'),
+            ('Radha',
+             'Krishna',
+             'radha.krishna@yahoo.com'),
+            ('Maa',
+             'Durga',
+             'Maa.Durga@gmail.com');
