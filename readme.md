@@ -50,3 +50,11 @@ add this lines in application.properties file to auto generate schema, and later
 #spring.jpa.properties.jakarta.persistence.schema-generation.scripts.action=create
 #spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-target=schema.sql
 #spring.jpa.properties.jakarta.persistence.schema-generation.scripts.create-source=metadata
+
+
+----------------
+Flyway has a specific naming convention for migration files, structured as V1__.sql. This helps manage database changes efficiently.
+Additionally, Flyway maintains a history of these migrations, storing checksums for each script. Every time you run your application, Flyway verifies these checksums, ensuring that existing SQL scripts remain unchanged.
+If you need to make any modifications, you'll have to create a new migration script instead of altering the existing one.
+This approach promotes better version control and helps prevent accidental changes that could disrupt your database schema.
+
