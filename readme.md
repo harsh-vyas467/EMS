@@ -144,3 +144,74 @@ Use AOP for common concerns, not core logic
 Avoid logging sensitive data
 
 Prefer @Around if you want full control
+
+--------------------------------------------------------------------------
+
+🔁 @Transactional in Spring Boot
+✅ What is @Transactional?
+It tells Spring to wrap a method in a database transaction.
+If anything goes wrong (like an exception), it automatically rolls back changes.
+
+🔧 When to Use It
+On service methods that perform database write operations
+
+On methods that do multiple DB operations and must succeed together
+
+🛠️ Example
+@Service
+@Transactional
+public class EmployeeServiceImpl implements EmployeeService {
+
+    @Override
+    public EmployeeDto updateEmployee(Long id, EmployeeDto updatedData) {
+        Employee emp = employeeRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Employee not found"));
+
+        emp.setFirstName(updatedData.getFirstName());
+        emp.setEmail(updatedData.getEmail());
+
+        return EmployeeMapper.mapToEmployeeDto(employeeRepository.save(emp));
+    }
+}
+✅ If no error → changes are committed
+❌ If error occurs → all changes are rolled back automatically
+
+🧠 Where to Put @Transactional
+Location	Recommended?	Why?
+@Service class	✅ Yes	Most reliable; logic layer
+@Repository class	❌ Not needed	Spring Data already manages it
+@Controller	❌ No	Controllers should not manage transactions
+
+🔁 How It Works
+Uses Spring AOP under the hood
+
+Wraps method in a proxy that manages the transaction
+
+⚠️ Common Mistakes
+Mistake	Problem
+Calling a @Transactional method from the same class	Proxy won't work — transaction is ignored
+Putting @Transactional on private methods	Spring can’t proxy them — won't apply
+Not handling exceptions properly	Some exceptions (like checked) may not trigger rollback
+
+🔧 Rollback for Custom Exceptions
+By default, only unchecked exceptions trigger rollback.
+To rollback on custom exceptions, do:
+
+
+@Transactional(rollbackFor = YourCustomException.class)
+🧾 Optional Config
+
+@Transactional(
+propagation = Propagation.REQUIRED,
+isolation = Isolation.READ_COMMITTED,
+rollbackFor = Exception.class
+)
+These give more control over transaction behavior (e.g., nesting, locking)
+
+✅ Summary
+Feature	Explanation
+Automatic rollback	On runtime exceptions
+Where to use	@Service methods with DB operations
+Works with	Spring AOP (proxy-based)
+Avoid on	Controllers, internal method calls
+
