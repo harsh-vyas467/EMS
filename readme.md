@@ -58,3 +58,89 @@ Additionally, Flyway maintains a history of these migrations, storing checksums 
 If you need to make any modifications, you'll have to create a new migration script instead of altering the existing one.
 This approach promotes better version control and helps prevent accidental changes that could disrupt your database schema.
 
+------------------------------------------------------------------------------------------
+
+🔧 Aspect-Oriented Programming (AOP) — Spring Boot Notes
+✅ What is AOP?
+AOP is used to separate common logic (like logging, security, transactions) from your main business code.
+This logic is called a cross-cutting concern.
+
+🧠 Why Use AOP?
+Avoid repeating code in multiple classes (e.g. logging in every service)
+
+Clean, modular, and maintainable
+
+Handles things "around" your main logic
+
+🛠️ AOP Terms 
+Term	Meaning
+Aspect	A class that contains cross-cutting logic
+Advice	The action to take (e.g., log, check security)
+JoinPoint	The actual place where the method runs
+Pointcut	The condition (expression) to match the method(s)
+Weaving	The process of applying aspects to the target methods
+
+🧩 Common AOP Annotations
+Annotation	When it runs	Used for
+@Aspect	Declares an aspect class	Needed for AOP class
+@Before	Before the method runs	Log input, check security
+@AfterReturning	After method returns (success)	Log output
+@AfterThrowing	If method throws exception	Log or handle error
+@After	After method (success/fail)	Cleanup (not for exceptions)
+@Around	Wraps method (entry/exit)	Full control, logs everything
+
+✅ Example: Logging with @Around
+
+@Aspect
+@Component
+@Slf4j
+public class LoggingAspect {
+
+    @Around("execution(* com.practice.springboot.ems..*(..))")
+    public Object logAll(ProceedingJoinPoint joinPoint) throws Throwable {
+        log.info("➡️ Entering: {}", joinPoint.getSignature());
+        try {
+            Object result = joinPoint.proceed();
+            log.info("✅ Returned: {}", result);
+            return result;
+        } catch (Throwable ex) {
+            log.error("❌ Exception: {}", ex.getMessage(), ex);
+            throw ex;
+        }
+    }
+}
+🔐 AOP for Security (Simulated)
+
+@Before("execution(* com.practice.springboot.ems.controller..*(..))")
+public void checkSecurity(JoinPoint joinPoint) {
+log.info("✅ Security check passed: {}", joinPoint.getSignature());
+// throw new AccessDeniedException(...) to block
+}
+For real security, use Spring Security: @PreAuthorize("hasRole('ADMIN')")
+
+📦 Maven Dependency for AOP
+
+<!-- Add to pom.xml -->
+<dependency>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-aop</artifactId>
+</dependency>
+
+
+✅ What You Can Do with AOP
+📜 Logging (input, output, exceptions)
+
+🔒 Security checks
+
+⏱️ Execution time tracking
+
+🔁 Transactions
+
+🔍 Validation or sanitization
+
+✅ Best Practices
+Use AOP for common concerns, not core logic
+
+Avoid logging sensitive data
+
+Prefer @Around if you want full control
