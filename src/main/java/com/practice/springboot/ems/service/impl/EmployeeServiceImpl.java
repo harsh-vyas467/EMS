@@ -20,13 +20,15 @@ public class EmployeeServiceImpl implements EmployeeService {
 
     private EmployeeRepository employeeRepository;
 
+    private final EmployeeMapper employeeMapper;
+
 
     @Override
     public EmployeeDto createEmployee(EmployeeDto employeeDto) {
 
-        Employee employee = EmployeeMapper.mapToEmployee(employeeDto);
+        Employee employee = employeeMapper.toEntity(employeeDto);
         Employee savedEmployee = employeeRepository.save(employee);
-        return EmployeeMapper.mapToEmployeeDto(savedEmployee);
+        return employeeMapper.toDto(savedEmployee);
     }
 
     @Override
@@ -35,13 +37,13 @@ public class EmployeeServiceImpl implements EmployeeService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Employee does not exist with given id : "+ employeeId));
 
-        return EmployeeMapper.mapToEmployeeDto(employee);
+        return employeeMapper.toDto(employee);
     }
 
     @Override
     public List<EmployeeDto> getAllEmployees() {
         List<Employee> employees = employeeRepository.findAll();
-        return employees.stream().map((employee) -> EmployeeMapper.mapToEmployeeDto(employee))
+        return employees.stream().map((employee) -> employeeMapper.toDto(employee))
                 .collect(Collectors.toList())
                 ;
     }
@@ -58,7 +60,7 @@ public class EmployeeServiceImpl implements EmployeeService {
         employee.setPlace(updatedEmployee.getPlace());
 
         Employee updatedEmployeeObj = employeeRepository.save(employee);
-        return EmployeeMapper.mapToEmployeeDto(updatedEmployeeObj);
+        return employeeMapper.toDto(updatedEmployeeObj);
     }
 
     @Override
