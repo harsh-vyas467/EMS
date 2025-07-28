@@ -13,4 +13,5 @@ public class EmployeeDto {
     private String lastName;
     private String email;
     private String place;
+    private String type; // maps to EmployeeType enum
 }

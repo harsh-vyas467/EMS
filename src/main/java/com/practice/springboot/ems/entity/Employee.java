@@ -14,18 +14,26 @@ public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Long empId;
 
     @Column(name= "first_name")
-    private String firstName;
+    private String fname;
 
     @Column(name= "last_name")
-    private String lastName;
+    private String lname;
 
     @Column(name= "email_id", nullable = false, unique = true)
-    private String email;
+    private String emailAddress;
 
     @Column(name= "place")
-    private String place;
+    private String location;
+
+    @Enumerated(EnumType.STRING)
+    private EmployeeType employeeType;
+
+    @Column(name = "internal_notes")
+    private String internalNotes; // Field we will ignore
 
 }
+
+
