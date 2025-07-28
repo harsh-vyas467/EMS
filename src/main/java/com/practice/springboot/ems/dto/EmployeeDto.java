@@ -7,7 +7,8 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
-public class EmployeeDto {
+public class EmployeeDto {// Data Transfer Object (DTO)
+    // Fields populated from incoming JSON request
     private Long id;
     private String firstName;
     private String lastName;

@@ -215,3 +215,60 @@ Where to use	@Service methods with DB operations
 Works with	Spring AOP (proxy-based)
 Avoid on	Controllers, internal method calls
 
+----------------------------
+
+🔁 Mapper (in Java)
+A Mapper is used to convert one Java object to another — usually between:
+
+  DTOs ↔ Entities
+
+  API models ↔ Domain models
+
+🛠️ MapStruct
+A code generator for mappers.
+It creates type-safe, compile-time efficient mapping code.
+
+Key Features:
+Annotation-based (@Mapper)
+
+Avoids reflection – faster than ModelMapper or Dozer
+
+Supports nested mapping, custom methods
+
+
+
+❌ Why NOT use Manual Mapper:
+Boilerplate Code
+You write repetitive code for every field mapping:
+
+dto.setName(entity.getName());
+dto.setAge(entity.getAge());
+...
+Error-Prone
+Easy to miss fields, especially when models evolve.
+
+Hard to Maintain
+Every model change needs changes in multiple manual mappers.
+
+No Compile-Time Safety
+Mistakes (like type mismatches or nulls) may only show up at runtime.
+
+✅ Why Use MapStruct:
+Auto-generates mapping code.
+
+Faster & safer — checked at compile time.
+
+Easier to maintain with large or nested objects.
+
+Cleaner and more readable codebase.
+
+
+✅ Recommendation
+Use MapStruct for most production use cases.
+
+Use ModelMapper for quick prototypes or small apps.
+
+Use manual mapping only if you need extreme customization or for learning purposes.
+
+
+
