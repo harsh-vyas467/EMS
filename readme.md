@@ -271,4 +271,14 @@ Use ModelMapper for quick prototypes or small apps.
 Use manual mapping only if you need extreme customization or for learning purposes.
 
 
+-------------------
+
+🧠 When to use @JsonProperty?
+When your Java field name and JSON field name differ.
+
+When you want to avoid exposing internal naming in APIs.
+
+When you need to follow external API specs or frontend expectations.
+
+
 
