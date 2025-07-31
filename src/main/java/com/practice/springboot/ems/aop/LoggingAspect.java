@@ -1,17 +1,21 @@
 package com.practice.springboot.ems.aop;
 
+import com.practice.springboot.ems.dto.EmployeeDto;
+import com.practice.springboot.ems.mongodb.service.EmployeeLogService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
 @Slf4j
 @Aspect
 @Component
+@RequiredArgsConstructor
 public class LoggingAspect {
+
+    private final EmployeeLogService employeeLogService;
+
     // Log before method execution
     @Before("execution(* com.practice.springboot.ems..*(..))")
     public void logMethodCall(JoinPoint joinPoint) {
@@ -29,6 +33,37 @@ public class LoggingAspect {
     public void logException(JoinPoint joinPoint, Throwable ex) {
         log.error("Exception in method: {} with message: {}", joinPoint.getSignature(), ex.getMessage());
     }
+
+    // mongo
+
+    @AfterReturning(
+            pointcut = "execution(* com.practice.springboot.ems.service.impl.EmployeeServiceImpl.createEmployee(..))",
+            returning = "result"
+    )
+    public void logEmployeeCreate(JoinPoint joinPoint, Object result) {
+        if (result instanceof EmployeeDto dto) {
+            employeeLogService.logAction(dto.getId(),"CREATE", "SYSTEM");
+        }
+    }
+
+    @AfterReturning(
+            pointcut = "execution(* com.practice.springboot.ems.service.impl.EmployeeServiceImpl.updateEmployee(..))",
+            returning = "result"
+    )
+    public void logEmployeeUpdate(JoinPoint joinPoint, Object result) {
+        if (result instanceof EmployeeDto dto) {
+            employeeLogService.logAction( dto.getId(),"UPDATE", "SYSTEM");
+        }
+    }
+
+    @After("execution(* com.practice.springboot.ems.service.impl.EmployeeServiceImpl.deleteEmployee(..))")
+    public void logEmployeeDelete(JoinPoint joinPoint) {
+        Object arg = joinPoint.getArgs()[0];
+        if (arg instanceof Long employeeId) {
+            employeeLogService.logAction(employeeId,"DELETE",  "SYSTEM");
+        }
+    }
+
 
 
 }
