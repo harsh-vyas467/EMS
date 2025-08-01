@@ -1,10 +1,14 @@
 package com.practice.springboot.ems.aop;
 
 import com.practice.springboot.ems.dto.EmployeeDto;
+import com.practice.springboot.ems.entity.Employee;
+import com.practice.springboot.ems.mapper.EmployeeMapper;
 import com.practice.springboot.ems.mongodb.service.EmployeeLogService;
+import com.practice.springboot.ems.repository.EmployeeRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
+import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +19,10 @@ import org.springframework.stereotype.Component;
 public class LoggingAspect {
 
     private final EmployeeLogService employeeLogService;
+
+    private final EmployeeMapper employeeMapper;
+
+    private final EmployeeRepository employeeRepository;
 
     // Log before method execution
     @Before("execution(* com.practice.springboot.ems..*(..))")
@@ -42,26 +50,70 @@ public class LoggingAspect {
     )
     public void logEmployeeCreate(JoinPoint joinPoint, Object result) {
         if (result instanceof EmployeeDto dto) {
-            employeeLogService.logAction(dto.getId(),"CREATE", "SYSTEM");
+            employeeLogService.logAction(dto.getId(),"CREATE", "SYSTEM", dto);
         }
     }
 
-    @AfterReturning(
-            pointcut = "execution(* com.practice.springboot.ems.service.impl.EmployeeServiceImpl.updateEmployee(..))",
-            returning = "result"
-    )
-    public void logEmployeeUpdate(JoinPoint joinPoint, Object result) {
-        if (result instanceof EmployeeDto dto) {
-            employeeLogService.logAction( dto.getId(),"UPDATE", "SYSTEM");
+    @Around("execution(* com.practice.springboot.ems.service.impl.EmployeeServiceImpl.updateEmployee(..))")
+    public Object logEmployeeUpdate(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object[] args = joinPoint.getArgs();
+        if (args.length > 0 && args[0] instanceof Long employeeId) {
+
+            // Fetch old state before update
+            Employee managedOldEmp = employeeRepository.findById(employeeId).orElse(null);
+            Employee oldEmployee = (managedOldEmp != null) ? cloneEmployee(managedOldEmp) : null;
+
+
+            // Proceed with actual update
+            Object result = joinPoint.proceed();
+
+            if (result instanceof EmployeeDto updatedDto) {
+                Employee updatedEmployee = employeeMapper.toEntity(updatedDto);
+
+                // Log difference
+                employeeLogService.logUpdateAction(oldEmployee, updatedEmployee, "SYSTEM");
+            }
+
+            return result;
         }
+
+        return joinPoint.proceed();
     }
 
-    @After("execution(* com.practice.springboot.ems.service.impl.EmployeeServiceImpl.deleteEmployee(..))")
-    public void logEmployeeDelete(JoinPoint joinPoint) {
-        Object arg = joinPoint.getArgs()[0];
-        if (arg instanceof Long employeeId) {
-            employeeLogService.logAction(employeeId,"DELETE",  "SYSTEM");
+    private Employee cloneEmployee(Employee source) {
+        Employee copy = new Employee();
+        copy.setEmpId(source.getEmpId());
+        copy.setFname(source.getFname());
+        copy.setLname(source.getLname());
+        copy.setLocation(source.getLocation());
+        copy.setEmailAddress(source.getEmailAddress());
+        copy.setEmployeeType(source.getEmployeeType());
+        // Add more fields as needed
+        return copy;
+    }
+
+    @Around("execution(* com.practice.springboot.ems.service.impl.EmployeeServiceImpl.deleteEmployee(..))")
+    public Object logEmployeeDelete(ProceedingJoinPoint joinPoint) throws Throwable {
+        Object[] args = joinPoint.getArgs();
+        if (args.length > 0 && args[0] instanceof Long employeeId) {
+            // Step 1: Fetch employee data before delete
+            // Inject the actual service/dao to fetch it (not shown here)
+            EmployeeDto deletedEmployeeDto = fetchEmployeeDtoById(employeeId); // You'll implement this
+
+            // Step 2: Proceed with deletion
+            Object result = joinPoint.proceed();
+
+            // Step 3: Log deleted data
+            employeeLogService.logAction(employeeId, "DELETE", "SYSTEM", deletedEmployeeDto);
+
+            return result;
         }
+        return joinPoint.proceed();
+    }
+
+    private EmployeeDto fetchEmployeeDtoById(Long id) {
+        Employee emp = employeeRepository.findById(id).orElseThrow(() -> new IllegalArgumentException("Employee not found with id: " + id));
+        return employeeMapper.toDto(emp);
     }
 
 
