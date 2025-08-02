@@ -3,6 +3,7 @@ package com.practice.springboot.ems.mongodb.service;
 
 import com.practice.springboot.ems.dto.EmployeeDto;
 import com.practice.springboot.ems.entity.Employee;
+import com.practice.springboot.ems.mapper.EmployeeMapper;
 import com.practice.springboot.ems.mongodb.document.EmployeeLog;
 import com.practice.springboot.ems.mongodb.repository.EmployeeLogRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,16 @@ public class EmployeeLogService {
 
     private final EmployeeLogRepository employeeLogRepository;
 
+    private final EmployeeMapper employeeMapper;
+
     public void logAction(Long employeeId, String action, String performedBy, EmployeeDto dto) {
         EmployeeLog log = new EmployeeLog();
         log.setEmployeeId(employeeId);
         log.setAction(action);
         log.setPerformedBy(performedBy);
+        if("CREATE".equalsIgnoreCase((action))) {
+            log.setNewData(employeeMapper.toEntity(dto));
+        }
 
         // If it's a DELETE, capture the deleted data
         if ("DELETE".equalsIgnoreCase(action) && dto != null) {
