@@ -280,5 +280,10 @@ When you want to avoid exposing internal naming in APIs.
 
 When you need to follow external API specs or frontend expectations.
 
+----------------
+- Connected MongoDB to capture and store audit logs.
+- Logs accurately reflect field-level changes, including updates and deletions.
+----------------
+
 
 

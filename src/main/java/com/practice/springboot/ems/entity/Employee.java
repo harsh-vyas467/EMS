@@ -31,7 +31,7 @@ public class Employee {
     @Enumerated(EnumType.STRING)
     private EmployeeType employeeType;
 
-    @Column(name = "internal_notes")
+    @Column(name = "internal_notes", columnDefinition = "TEXT") //Using TEXT allows long notes without truncation
     private String internalNotes; // Field we will ignore
 
 }
