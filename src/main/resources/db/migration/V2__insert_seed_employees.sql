@@ -13,3 +13,12 @@ VALUES
     ('Parvati', 'Shiv', 'shiv.parwati@gmail.com', 'Kailash', 'INTERN', 'Newly onboarded'),
     ('Radha', 'Krishna', 'radha.krishna@yahoo.com', 'Barsana', 'PERMANENT', 'Excellent team player'),
     ('Maa', 'Durga', 'Maa.Durga@gmail.com', 'Himalayas', 'PERMANENT', 'Handles critical incidents');
+
+
+
+
+
+INSERT INTO users (user_id, username, password)
+VALUES
+    (1, 'Harsh', 'h@123'),
+    (2, 'postman', 'p@123');

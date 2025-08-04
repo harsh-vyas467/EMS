@@ -8,3 +8,10 @@ CREATE TABLE IF NOT EXISTS employees (
     employee_type  VARCHAR(50),
     internal_notes TEXT
 );
+
+
+CREATE TABLE IF NOT EXISTS users (
+    user_id INTEGER PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password TEXT NOT NULL
+);
